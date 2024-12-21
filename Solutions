@@ -1,0 +1,12 @@
+1. Problem statemant - Histogram of Tweets
+
+with base AS(
+SELECT user_id, COUNT(user_id) tweet_val
+FROM tweets
+WHERE EXTRACT(year FROM tweet_date) = 2022
+GROUP BY 1
+)
+
+SELECT  tweet_val tweet_bucket, count(tweet_val) users_num
+FROM base 
+GROUP BY 1;
