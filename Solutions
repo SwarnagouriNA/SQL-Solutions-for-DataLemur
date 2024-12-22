@@ -1,4 +1,4 @@
-1. Problem statemant - Histogram of Tweets
+---------------1. Problem statemant - Histogram of Tweets---------------
 
 with base AS(
 SELECT user_id, COUNT(user_id) tweet_val
@@ -10,3 +10,27 @@ GROUP BY 1
 SELECT  tweet_val tweet_bucket, count(tweet_val) users_num
 FROM base 
 GROUP BY 1;
+
+---------------2. User's Third Transaction---------------
+
+with base as(
+SELECT *, 
+row_number() over (partition by user_id order by transaction_date asc) as row_val
+FROM transactions
+GROUP BY 1,2,3
+)
+
+SELECT user_id, spend, transaction_date
+FROM base 
+WHERE row_val=3
+
+---------------3. Second Highest Salary---------------
+with base as(
+SELECT *, dense_rank() over (order by salary desc) sal_rank
+FROM employee
+)
+
+SELECT salary as second_highest_salary
+FROM base
+WHERE sal_rank = 2
+limit 1
