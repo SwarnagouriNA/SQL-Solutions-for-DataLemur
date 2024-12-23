@@ -25,6 +25,7 @@ FROM base
 WHERE row_val=3
 
 ---------------3. Second Highest Salary---------------
+
 with base as(
 SELECT *, dense_rank() over (order by salary desc) sal_rank
 FROM employee
@@ -34,3 +35,24 @@ SELECT salary as second_highest_salary
 FROM base
 WHERE sal_rank = 2
 limit 1
+
+---------------4. Sending vs. Opening Snaps---------------
+with base as(
+SELECT a.*, ab.age_bucket
+FROM activities a
+INNER JOIN age_breakdown ab
+ON a.user_id = ab.user_id
+),
+
+final as(
+SELECT age_bucket, SUM(CASE WHEN activity_type='open' THEN time_spent END) AS open_spent,
+SUM(CASE WHEN activity_type='send' THEN time_spent END) AS send_spent
+FROM base
+GROUP BY 1
+)
+
+SELECT age_bucket, round((send_spent/(send_spent+open_spent))*100.0,2) send_perc,
+round((open_spent/(send_spent+open_spent))*100.0,2) open_perc
+FROM final
+
+
