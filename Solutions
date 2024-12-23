@@ -22,7 +22,7 @@ GROUP BY 1,2,3
 
 SELECT user_id, spend, transaction_date
 FROM base 
-WHERE row_val=3
+WHERE row_val=3;
 
 ---------------3. Second Highest Salary---------------
 
@@ -34,7 +34,7 @@ FROM employee
 SELECT salary as second_highest_salary
 FROM base
 WHERE sal_rank = 2
-limit 1
+limit 1;
 
 ---------------4. Sending vs. Opening Snaps---------------
 with base as(
@@ -53,6 +53,15 @@ GROUP BY 1
 
 SELECT age_bucket, round((send_spent/(send_spent+open_spent))*100.0,2) send_perc,
 round((open_spent/(send_spent+open_spent))*100.0,2) open_perc
-FROM final
+FROM final;
 
+---------------5. Tweets Rolling Averages 3-days
+SELECT *, 
+ROUND(AVG(tweet_count) OVER (PARTITION BY user_id ORDER BY tweet_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) AS rolling_avg
+FROM tweets
+order by user_id asc;
+
+Note: `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW`: specifies the frame of rows to consider for the average calculation. It includes the current row 
+and the two preceding rows, allowing to calculate an average over these 3 rows.
+It can be used with SUM(), MIN(), MAX(), COUNT() and AVG().
 
